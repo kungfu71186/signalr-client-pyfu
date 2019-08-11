@@ -36,7 +36,8 @@ class Connection:
         self.starting += self.__set_data
 
     def __set_data(self):
-        self.data = json.dumps([{'name': hub_name} for hub_name in self.__hubs])
+        self.data = json.dumps([{'name': hub_name}
+                                for hub_name in self.__hubs])
 
     def increment_send_counter(self):
         self.__send_counter += 1
@@ -48,7 +49,7 @@ class Connection:
         negotiate_data = self.__transport.negotiate()
         self.token = negotiate_data['ConnectionToken']
         self.id = negotiate_data['ConnectionId']
-        
+
         listener = self.__transport.start()
 
         def wrapped_listener():
@@ -66,6 +67,8 @@ class Connection:
 
     def close(self):
         gevent.kill(self.__greenlet)
+        while not self.__greenlet.dead:
+            gevent.sleep()
         self.__transport.close()
 
     def register_hub(self, name):

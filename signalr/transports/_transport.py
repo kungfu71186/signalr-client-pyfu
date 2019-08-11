@@ -1,13 +1,14 @@
+import gevent
 from abc import abstractmethod
 import json
 import sys
+import datetime
+import traceback
 
 if sys.version_info[0] < 3:
     from urllib import quote_plus
 else:
     from urllib.parse import quote_plus
-
-import gevent
 
 
 class Transport:
@@ -47,7 +48,13 @@ class Transport:
     def _handle_notification(self, message):
         if len(message) > 0:
             data = json.loads(message)
-            self._connection.received.fire(**data)
+            try:
+                self._connection.received.fire(**data)
+                data = json.loads(message)
+            except Exception as e:
+                traceback.print_exc()
+                print(str(datetime.datetime.now()) +
+                      ': Json decode error: ' + str(e))
         gevent.sleep()
 
     def _get_url(self, action, **kwargs):
@@ -63,7 +70,8 @@ class Transport:
         args = kwargs.copy()
         args.update(connection.qs)
         args['clientProtocol'] = connection.protocol_version
-        query = '&'.join(['{key}={value}'.format(key=key, value=quote_plus(args[key])) for key in args])
+        query = '&'.join(['{key}={value}'.format(
+            key=key, value=quote_plus(args[key])) for key in args])
 
         return '{url}/{action}?{query}'.format(url=connection.url,
                                                action=action,
