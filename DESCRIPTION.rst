@@ -37,7 +37,7 @@ Here is sample usage::
         chat = connection.register_hub('chat')
 
         #start a connection
-        connection.start()
+        #connection.start()
 
         #create new chat message handler
         def print_received_message(data):

@@ -14,6 +14,7 @@ class Connection:
         self.qs = {}
         self.__send_counter = -1
         self.token = None
+        self.id = None
         self.data = None
         self.received = EventHook()
         self.error = EventHook()
@@ -46,7 +47,8 @@ class Connection:
 
         negotiate_data = self.__transport.negotiate()
         self.token = negotiate_data['ConnectionToken']
-
+        self.id = negotiate_data['ConnectionId']
+        
         listener = self.__transport.start()
 
         def wrapped_listener():

@@ -5,6 +5,7 @@ Python client proxy for [SignalR](http://signalr.net/).
 ## Requirements
 
 Install requirements by running
+
 ```
 pip install -r requirements
 ```
@@ -12,11 +13,9 @@ pip install -r requirements
 Signalr client is based on `gevent` which in turn requires Python headers.
 In Debian based distributions (such as Ubuntu and Raspbian) they are called `python-dev`.
 
-
 ## Compatibility
 
 Compatible with Python 2 and 3.
-
 
 ## Usage
 
@@ -32,7 +31,9 @@ with Session() as session:
     chat = connection.register_hub('chat')
 
     #start a connection
-    connection.start()
+    # This isn't needed since we use with connection below.
+    # `with connection` will start the connection
+    #connection.start()
 
     #create new chat message handler
     def print_received_message(data):
@@ -45,6 +46,10 @@ with Session() as session:
     #create error handler
     def print_error(error):
         print('error: ', error)
+
+    #create callback method when a callback handler is specified
+    def print_callback(response):
+        print('response: ', response)
 
     #receive new chat messages from the hub
     chat.client.on('newMessageReceived', print_received_message)
@@ -61,6 +66,9 @@ with Session() as session:
         #post new message
         chat.server.invoke('send', 'Python is here')
 
+        #post new message
+        chat.server.invoke('send', 'Python is here', handler=print_callback)
+
         #change chat topic
         chat.server.invoke('setTopic', 'Welcome python!')
 
@@ -74,7 +82,6 @@ with Session() as session:
         connection.wait(1)
 ```
 
-
 ## Sample application
 
 There is a [sample application](https://github.com/TargetProcess/signalr-client-py/tree/develop/examples/Chat)
@@ -82,28 +89,28 @@ There is a [sample application](https://github.com/TargetProcess/signalr-client-
 
 1. Install ASP.NET 5 RC.
 
-    1) [Windows installation instructions](http://docs.asp.net/en/latest/getting-started/installing-on-windows.html).
+   1. [Windows installation instructions](http://docs.asp.net/en/latest/getting-started/installing-on-windows.html).
 
-    2) [Mac OS X installation instructions](http://docs.asp.net/en/latest/getting-started/installing-on-mac.html).
-    
-    3) [Linux installation instructions](http://docs.asp.net/en/latest/getting-started/installing-on-linux.html).
-    
+   2. [Mac OS X installation instructions](http://docs.asp.net/en/latest/getting-started/installing-on-mac.html).
+
+   3. [Linux installation instructions](http://docs.asp.net/en/latest/getting-started/installing-on-linux.html).
+
 2. Go to examples/Chat folder.
 
-3. ```dnvm upgrade ```
+3. `dnvm upgrade`
 
-4. ```dnu restore ```
+4. `dnu restore`
 
 5. Install node and npm.
 
-6. ```npm install ```
+6. `npm install`
 
-7. ```gulp ```
+7. `gulp`
 
-8. ```dnx web ```
-
+8. `dnx web`
 
 ## Troubleshooting
 
 #### dnvm is not available on Mac OS X after installation
-Run ```source dnvm.sh```.
+
+Run `source dnvm.sh`.
